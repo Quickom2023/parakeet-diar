@@ -86,4 +86,31 @@ defmodule ParakeetDiar.ServerTest do
     assert {:error, {:load_failed, _}} =
              ParakeetDiar.Server.start_link(model: "/nonexistent.gguf")
   end
+
+  test "step feeds and tells what ended, who is speaking and how far it is" do
+    server = start_supervised!({ParakeetDiar.Server, model: model(), max_streams: 2})
+    :ok = ParakeetDiar.Server.open(server, "a", :low)
+    pcm = :binary.copy(<<0, 0>>, 16_000)
+
+    assert {:ok, %{ended: [], active: [], time: time}} =
+             ParakeetDiar.Server.step(server, "a", pcm, false)
+
+    assert is_float(time)
+  end
+
+  test "an owner gone without closing has its streams freed" do
+    server = start_supervised!({ParakeetDiar.Server, model: model(), max_streams: 1})
+
+    owner =
+      spawn(fn ->
+        :ok = ParakeetDiar.Server.open(server, "a", :low)
+        receive do: (:go -> :ok)
+      end)
+
+    Process.sleep(200)
+    assert {:error, :busy} = ParakeetDiar.Server.open(server, "b", :low)
+    send(owner, :go)
+    Process.sleep(200)
+    assert :ok = ParakeetDiar.Server.open(server, "b", :low)
+  end
 end
