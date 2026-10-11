@@ -24,3 +24,8 @@ parakeet_diar-*.tar
 
 priv/parakeet_diar_nif.so
 c_src/*.o
+
+# Precompiled NIF bundles (produced by `mix elixir_make.precompile`)
+priv/lib/
+priv/*.so
+cache/

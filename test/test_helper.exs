@@ -1,8 +1,8 @@
 defmodule ParakeetDiar.TestHelper do
   @moduledoc false
 
-  @default_model "/home/phanmn/Documents/codings/parakeet.cpp/models/nemotron-3-diarization-f16.gguf"
-  @default_wav "/home/phanmn/Documents/codings/parakeet.cpp/tests/fixtures/two_speakers.wav"
+  @default_model Path.expand("../../parakeet.cpp/models/nemotron-3-diarization-f16.gguf", __DIR__)
+  @default_wav Path.expand("../../parakeet.cpp/tests/fixtures/two_speakers.wav", __DIR__)
 
   @wav_header_bytes 44
 
